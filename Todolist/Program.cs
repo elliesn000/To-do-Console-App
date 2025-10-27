@@ -110,6 +110,10 @@ namespace Todolist
                         Console.Clear();
                         AddTask();
                         break;
+                    //case 3:
+                    //    Console.Clear();
+                    //    break;
+
 
                     default:
                         Console.WriteLine("Invalid input. Try again.");
