@@ -1,0 +1,23 @@
+# VS / Build
+.vs/
+bin/
+obj/
+**/DesignTimeBuild/
+**/FileContentIndex/
+
+# User-specific
+*.user
+*.userosscache
+*.suo
+
+# Others
+*.VC.db
+*.opendb
+*.db-shm
+*.db-wal
+*.pdb
+*.cache
+*.log
+
+# Publish
+**/publish/
