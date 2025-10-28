@@ -3,6 +3,7 @@ using System.Globalization;
 
 namespace Todolist
 {
+
     class InputParse
     {
         public static string GetName(string prompt)
@@ -61,9 +62,15 @@ namespace Todolist
             }
         }
     }
+    public enum StatusEnum
+    {
+        Pending,
+        Done
+    }
     class TaskList
     {
         public string Name;
+        public StatusEnum Status;
         public DateTime Date;
         public TimeSpan Time_start;
         public TimeSpan Time_end;
@@ -71,6 +78,7 @@ namespace Todolist
         public TaskList(string name, DateTime date, TimeSpan time_start, TimeSpan time_end)
         {
             Name = name;
+            Status = StatusEnum.Pending;
             Date = date;
             Time_start = time_start;
             Time_end = time_end;
@@ -82,6 +90,7 @@ namespace Todolist
     {
         static TaskList[] tasks = new TaskList[20];
         static int count = 0;
+        
         static void Main(string[] args)
         {
             while (true)
@@ -92,6 +101,8 @@ namespace Todolist
                 Console.WriteLine("===============================");
                 Console.WriteLine("1. View Tasks");
                 Console.WriteLine("2. Add Task");
+                Console.WriteLine("3. Waiting....");
+                Console.WriteLine("4. Mark Task as Done");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("-------------------------------");
 
@@ -104,6 +115,8 @@ namespace Todolist
                     case 1:
                         Console.Clear();
                         ViewTask();
+                        Console.WriteLine("Press Enter to return Menu.");
+                        Console.ReadLine();
                         break;
 
                     case 2:
@@ -112,8 +125,12 @@ namespace Todolist
                         break;
                     //case 3:
                     //    Console.Clear();
+                       
                     //    break;
-
+                    case 4:
+                        Console.Clear();
+                        StatusTask();
+                        break;
 
                     default:
                         Console.WriteLine("Invalid input. Try again.");
@@ -134,12 +151,12 @@ namespace Todolist
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. [ ] {tasks[i].Name} ({tasks[i].Date:yyyy-MM-dd} {tasks[i].Time_start:hh\\:mm} - {tasks[i].Time_end:hh\\:mm}) - {tasks[i].Duration.TotalMinutes} min");
+                    string statusview = tasks[i].Status == StatusEnum.Done ? "[x]" : "[ ]";
+                    Console.WriteLine($"{i + 1}. {statusview} {tasks[i].Name} ({tasks[i].Date:yyyy-MM-dd} {tasks[i].Time_start:hh\\:mm} - {tasks[i].Time_end:hh\\:mm}) - {tasks[i].Duration.TotalMinutes} min");
                 }
                 Console.WriteLine("===============================");
                 Console.WriteLine($"Total: {count} task.");
-                Console.WriteLine("Press Enter to return Menu.");
-                Console.ReadLine();
+
             }
 
             static void AddTask()
@@ -163,6 +180,49 @@ namespace Todolist
                 count++;
                 Console.WriteLine("Task added successfully!");
                 Console.ReadLine();
+            }
+
+            static void StatusTask()
+            {
+                ViewTask();
+                if (count == 0)
+                {                    
+                    return;
+                }                
+                Console.WriteLine($"Enter task number (1..{count}) or press 0 to cancel: ");
+                if (!int.TryParse(Console.ReadLine(), out int countstatus))
+                {
+                    Console.WriteLine("Invalid input!");
+                    Console.ReadLine();
+                    return;
+                }
+                if (countstatus == 0) return;
+                if (countstatus < 0 || countstatus > count)
+                {
+                    Console.WriteLine("Invalid task number!");
+                    Console.ReadLine();
+                    return;
+                }
+                
+                Console.WriteLine("Enter status: press 1 = Done, press 0 = Pending");
+                int chosestatus = Convert.ToInt32(Console.ReadLine());
+                switch (chosestatus)
+                {
+                    case 0:
+                        tasks[countstatus - 1].Status = StatusEnum.Pending;
+                        Console.WriteLine("Set back to Pending.");
+                        break;
+                    case 1:
+                        tasks[countstatus-1].Status = StatusEnum.Done;
+                        Console.WriteLine("Marked as Done.");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid status value!");
+                        Console.ReadLine();
+                        return;
+                }
+                Console.WriteLine("===============================");
+                Console.WriteLine("Update list");
             }
         }
     }
