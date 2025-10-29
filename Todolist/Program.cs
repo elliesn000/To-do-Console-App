@@ -101,7 +101,7 @@ namespace Todolist
                 Console.WriteLine("===============================");
                 Console.WriteLine("1. View Tasks");
                 Console.WriteLine("2. Add Task");
-                Console.WriteLine("3. Waiting....");
+                Console.WriteLine("3. Delete Task");
                 Console.WriteLine("4. Mark Task as Done");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("-------------------------------");
@@ -115,6 +115,7 @@ namespace Todolist
                     case 1:
                         Console.Clear();
                         ViewTask();
+                        Console.WriteLine("===============================");
                         Console.WriteLine("Press Enter to return Menu.");
                         Console.ReadLine();
                         break;
@@ -123,10 +124,10 @@ namespace Todolist
                         Console.Clear();
                         AddTask();
                         break;
-                    //case 3:
-                    //    Console.Clear();
-                       
-                    //    break;
+                    case 3:
+                        Console.Clear();
+                        DeleteTask();
+                        break;
                     case 4:
                         Console.Clear();
                         StatusTask();
@@ -186,7 +187,8 @@ namespace Todolist
             {
                 ViewTask();
                 if (count == 0)
-                {                    
+                {
+                    Console.ReadLine();
                     return;
                 }                
                 Console.WriteLine($"Enter task number (1..{count}) or press 0 to cancel: ");
@@ -202,8 +204,7 @@ namespace Todolist
                     Console.WriteLine("Invalid task number!");
                     Console.ReadLine();
                     return;
-                }
-                
+                }                
                 Console.WriteLine("Enter status: press 1 = Done, press 0 = Pending");
                 int chosestatus = Convert.ToInt32(Console.ReadLine());
                 switch (chosestatus)
@@ -224,6 +225,42 @@ namespace Todolist
                 Console.WriteLine("===============================");
                 Console.WriteLine("Update list");
             }
+
+            static void DeleteTask()
+            {
+                ViewTask();
+                if (count == 0)
+                {
+                    Console.ReadLine();
+                    return;
+                }
+                Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");                
+                if (!int.TryParse(Console.ReadLine(),out int numberDel))
+                {
+                    Console.WriteLine("Invalid input!");
+                    Console.ReadLine();
+                    return;
+                }
+                if (numberDel == 0) return;
+                if (numberDel<1|| numberDel>count)
+                {
+                    Console.WriteLine("Invalid input!");
+                    Console.ReadLine();
+                    return;
+                }
+                for (int i = numberDel - 1; i < count; i++)
+                {
+                    tasks[i] = tasks[i+1];
+                }
+                tasks[count-1] = null;
+                count--;
+                ViewTask();
+                Console.WriteLine("===============================");
+                Console.WriteLine("Task Deleted.");
+
+                        
+
+            }            
         }
     }
 }
