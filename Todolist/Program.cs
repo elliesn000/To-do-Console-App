@@ -117,7 +117,9 @@ namespace Todolist
                 Console.WriteLine("2. Add Task");
                 Console.WriteLine("3. Delete Task");
                 Console.WriteLine("4. Change Status Task");
-                Console.WriteLine("5. Edit Task");                
+                Console.WriteLine("5. Edit Task");
+                Console.WriteLine("6. Delete All Task");
+                Console.WriteLine("7. Today’s Productivity Report");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("-------------------------------");
 
@@ -159,6 +161,15 @@ namespace Todolist
                         Console.Clear();
                         EditTask();
                         break;
+                    case 6:
+                        Console.Clear();
+                        DeleteAllTask();
+                        break;
+                    case 7:
+                        Console.Clear();
+                        ReportTask();
+                        break;
+
 
                     default:
                         Console.WriteLine("Invalid choose. Try again.");
@@ -339,6 +350,58 @@ namespace Todolist
                     }
                 }
             }
+
+            static void DeleteAllTask()
+            {
+                for (int i = 0; i < count; i++) 
+                {
+                    tasks[i] = null;
+                    count = 0;
+                }
+                ViewTask();
+                Console.WriteLine("===============================");
+                Console.WriteLine("Delete All Task successfully.");
+                Console.ReadLine();
+                return;
+            }
+
+            static void ReportTask()
+            {
+                int completecount = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    if (tasks[i].Status == StatusEnum.Done)
+                    {
+                        completecount++;
+                    }
+                }
+                double completerate = count == 0 ? 0.00 : (double)completecount * 100.0 / count;
+
+                string evaluation = completecount == count
+                    ? "Excellent! Keep the energy going!"
+                    : completerate < 60
+                        ? "Making progress — stay focused!"
+                        : "Good work! Keep pushing forward!";
+
+                //if (completecount == count) 
+                //    evaluation = "Excellent! Keep the energy going!";
+                //else if (completerate < 60)
+                //    evaluation = "Making progress — stay focused!";
+                //else evaluation = "Good work! Keep pushing forward!";
+
+                ViewTask();
+                Console.WriteLine("===============================");
+                Console.WriteLine("  TODAY'S PRODUCTIVITY REPORT  ");
+                Console.WriteLine("===============================");
+                Console.WriteLine($"Total Tasks: {count}");
+                Console.WriteLine($"Completed: {completecount}");
+                Console.WriteLine($"Completion Rate: {completerate:F2}%");
+                Console.WriteLine($"Evaluation: {evaluation}");
+                Console.ReadLine ();
+                return;
+
+            }
+
         }
     }
 }
