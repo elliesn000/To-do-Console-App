@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
+using Todolist;
 
 namespace Todolist
 {
@@ -89,10 +92,21 @@ namespace Todolist
     class Program
     {
         static TaskList[] tasks = new TaskList[20];
-        static int count = 0;
-        
+        static int count = 0;        
         static void Main(string[] args)
         {
+            tasks[count++] = new TaskList("Test: Task 1", DateTime.Today, new TimeSpan(2, 0, 0), new TimeSpan(5, 0, 0))
+            {
+                Status = StatusEnum.Pending
+            };
+            tasks[count++] = new TaskList("Test: Task 2", DateTime.Today.AddDays(1), new TimeSpan(5, 0, 0), new TimeSpan(7, 0, 0))
+            {
+                Status = StatusEnum.Done
+            };
+            tasks[count++] = new TaskList("Test: Task 3", DateTime.Today.AddDays(2), new TimeSpan(7, 0, 0), new TimeSpan(8, 0, 0))
+            {
+                Status = StatusEnum.Pending
+            };
             while (true)
             {
                 Console.Clear();
@@ -107,7 +121,15 @@ namespace Todolist
                 Console.WriteLine("-------------------------------");
 
                 Console.Write("Choose an option: ");
-                int choose = Convert.ToInt32(Console.ReadLine());
+                string menuinput = Console.ReadLine();
+                if (!int.TryParse(menuinput, out int choose))
+                {
+                    Console.WriteLine("Invalid input. Try again.");
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
+                    continue;
+                }
+                
                 switch (choose)
                 {
                     case 0:
@@ -134,7 +156,9 @@ namespace Todolist
                         break;
 
                     default:
-                        Console.WriteLine("Invalid input. Try again.");
+                        Console.WriteLine("Invalid choose. Try again.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
                         break;
 
                 }
@@ -172,7 +196,6 @@ namespace Todolist
                     Console.ReadLine();
                     return;
                 }
-
                 tasks[count] = new TaskList(name, date, time_start, time_end);
                 tasks[count].Name = name;
                 tasks[count].Date = date;
@@ -222,45 +245,51 @@ namespace Todolist
                         Console.ReadLine();
                         return;
                 }
+                ViewTask();
+                Console.ReadLine();
                 Console.WriteLine("===============================");
                 Console.WriteLine("Update list");
             }
 
             static void DeleteTask()
-            {
-                ViewTask();
-                if (count == 0)
-                {
-                    Console.ReadLine();
-                    return;
+            {                
+                while (true)
+                {                    
+                    ViewTask();
+                    if (count == 0)
+                    {
+                        Console.ReadLine();
+                        return;
+                    }
+                    
+                    Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");
+                    if (!int.TryParse(Console.ReadLine(), out int numberDel))
+                    {
+                        Console.WriteLine("Invalid input!");
+                        Console.ReadLine();
+                        return;
+                    }
+                    if (numberDel == 0) return;
+                    if (numberDel < 1 || numberDel > count)
+                    {
+                        Console.WriteLine("Invalid input!");
+                        Console.ReadLine();
+                        return;
+                    }
+                    for (int i = numberDel - 1; i < count; i++)
+                    {
+                        tasks[i] = tasks[i + 1];
+                    }
+                    tasks[count - 1] = null;
+                    count--;
+                    Console.Clear();
+                    ViewTask();
+                    Console.WriteLine("===============================");
+                    Console.WriteLine("Task Deleted.");
+                    Console.ReadLine();                    
                 }
-                Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");                
-                if (!int.TryParse(Console.ReadLine(),out int numberDel))
-                {
-                    Console.WriteLine("Invalid input!");
-                    Console.ReadLine();
-                    return;
-                }
-                if (numberDel == 0) return;
-                if (numberDel<1|| numberDel>count)
-                {
-                    Console.WriteLine("Invalid input!");
-                    Console.ReadLine();
-                    return;
-                }
-                for (int i = numberDel - 1; i < count; i++)
-                {
-                    tasks[i] = tasks[i+1];
-                }
-                tasks[count-1] = null;
-                count--;
-                ViewTask();
-                Console.WriteLine("===============================");
-                Console.WriteLine("Task Deleted.");
-
-                        
-                //ashgfash
-            }            
+            }
+            
         }
     }
 }
