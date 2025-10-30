@@ -92,7 +92,7 @@ namespace Todolist
     class Program
     {
         static TaskList[] tasks = new TaskList[20];
-        static int count = 0;        
+        static int count = 0;
         static void Main(string[] args)
         {
             tasks[count++] = new TaskList("Test: Task 1", DateTime.Today, new TimeSpan(2, 0, 0), new TimeSpan(5, 0, 0))
@@ -116,7 +116,8 @@ namespace Todolist
                 Console.WriteLine("1. View Tasks");
                 Console.WriteLine("2. Add Task");
                 Console.WriteLine("3. Delete Task");
-                Console.WriteLine("4. Mark Task as Done");
+                Console.WriteLine("4. Change Status Task");
+                Console.WriteLine("5. Edit Task");                
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("-------------------------------");
 
@@ -129,7 +130,7 @@ namespace Todolist
                     Console.ReadLine();
                     continue;
                 }
-                
+
                 switch (choose)
                 {
                     case 0:
@@ -153,6 +154,10 @@ namespace Todolist
                     case 4:
                         Console.Clear();
                         StatusTask();
+                        break;
+                    case 5:
+                        Console.Clear();
+                        EditTask();
                         break;
 
                     default:
@@ -213,7 +218,7 @@ namespace Todolist
                 {
                     Console.ReadLine();
                     return;
-                }                
+                }
                 Console.WriteLine($"Enter task number (1..{count}) or press 0 to cancel: ");
                 if (!int.TryParse(Console.ReadLine(), out int countstatus))
                 {
@@ -227,17 +232,22 @@ namespace Todolist
                     Console.WriteLine("Invalid task number!");
                     Console.ReadLine();
                     return;
-                }                
+                }
                 Console.WriteLine("Enter status: press 1 = Done, press 0 = Pending");
-                int chosestatus = Convert.ToInt32(Console.ReadLine());
-                switch (chosestatus)
+                if (!int.TryParse(Console.ReadLine(), out int choosestatus))
+                {
+                    Console.WriteLine("Invalid Input.");
+                    Console.ReadLine();
+                    return;
+                }
+                switch (choosestatus)
                 {
                     case 0:
                         tasks[countstatus - 1].Status = StatusEnum.Pending;
                         Console.WriteLine("Set back to Pending.");
                         break;
                     case 1:
-                        tasks[countstatus-1].Status = StatusEnum.Done;
+                        tasks[countstatus - 1].Status = StatusEnum.Done;
                         Console.WriteLine("Marked as Done.");
                         break;
                     default:
@@ -245,23 +255,25 @@ namespace Todolist
                         Console.ReadLine();
                         return;
                 }
+                Console.Clear();
                 ViewTask();
-                Console.ReadLine();
                 Console.WriteLine("===============================");
                 Console.WriteLine("Update list");
+                Console.ReadLine();
+                return;
             }
 
             static void DeleteTask()
-            {                
+            {
                 while (true)
-                {                    
+                {
                     ViewTask();
                     if (count == 0)
                     {
                         Console.ReadLine();
                         return;
                     }
-                    
+
                     Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");
                     if (!int.TryParse(Console.ReadLine(), out int numberDel))
                     {
@@ -272,9 +284,9 @@ namespace Todolist
                     if (numberDel == 0) return;
                     if (numberDel < 1 || numberDel > count)
                     {
-                        Console.WriteLine("Invalid input!");
+                        Console.WriteLine("Invalid input!. Press Enter to try again.");
                         Console.ReadLine();
-                        return;
+                        continue;
                     }
                     for (int i = numberDel - 1; i < count; i++)
                     {
@@ -286,10 +298,47 @@ namespace Todolist
                     ViewTask();
                     Console.WriteLine("===============================");
                     Console.WriteLine("Task Deleted.");
-                    Console.ReadLine();                    
+                    Console.ReadLine();
+                    return;
                 }
             }
-            
+            static void EditTask()
+            {
+                ViewTask();
+                while (true) 
+                {
+                    if (count==0) 
+                    {  
+                        Console.ReadLine(); 
+                        return; 
+                    }
+                    Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");
+                    if (!int.TryParse(Console.ReadLine(), out int numberEdit))
+                    {
+                        Console.WriteLine("Invalid Input. Press Enter to try again");
+                        Console.ReadLine();
+                        continue;
+                    }
+                    if (numberEdit == 0) return;
+                    if (numberEdit < 1 || numberEdit > count)
+                    {
+                        Console.WriteLine("Invalid task.");
+                        Console.ReadLine();
+                        continue;
+                    }
+                    {
+                        Console.WriteLine("Enter new Task");
+                        int i = numberEdit - 1;
+                        tasks[i].Name = Console.ReadLine();
+                        Console.Clear ();
+                        ViewTask();
+                        Console.WriteLine("===============================");
+                        Console.WriteLine("Task updated successfully.");
+                        Console.ReadLine();
+                        return;
+                    }
+                }
+            }
         }
     }
 }
