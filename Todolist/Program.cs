@@ -1,8 +1,6 @@
-﻿using System;
-using System.Globalization;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading.Tasks;
-using Todolist;
+﻿using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace Todolist
 {
@@ -99,11 +97,11 @@ namespace Todolist
             {
                 Status = StatusEnum.Pending
             };
-            tasks[count++] = new TaskList("Test: Task 2", DateTime.Today.AddDays(1), new TimeSpan(5, 0, 0), new TimeSpan(7, 0, 0))
+            tasks[count++] = new TaskList("Test: Task 2", DateTime.Today.AddDays(2), new TimeSpan(5, 0, 0), new TimeSpan(7, 0, 0))
             {
                 Status = StatusEnum.Done
             };
-            tasks[count++] = new TaskList("Test: Task 3", DateTime.Today.AddDays(2), new TimeSpan(7, 0, 0), new TimeSpan(8, 0, 0))
+            tasks[count++] = new TaskList("Test: Task 3", DateTime.Today.AddDays(1), new TimeSpan(7, 0, 0), new TimeSpan(8, 0, 0))
             {
                 Status = StatusEnum.Pending
             };
@@ -120,6 +118,7 @@ namespace Todolist
                 Console.WriteLine("5. Edit Task");
                 Console.WriteLine("6. Delete All Task");
                 Console.WriteLine("7. Today’s Productivity Report");
+                Console.WriteLine("8. Export TimeTable to .txt");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("-------------------------------");
 
@@ -169,7 +168,10 @@ namespace Todolist
                         Console.Clear();
                         ReportTask();
                         break;
-
+                    case 8:
+                        Console.Clear();
+                        ExportFileTxt();
+                        break;
 
                     default:
                         Console.WriteLine("Invalid choose. Try again.");
@@ -316,12 +318,12 @@ namespace Todolist
             static void EditTask()
             {
                 ViewTask();
-                while (true) 
+                while (true)
                 {
-                    if (count==0) 
-                    {  
-                        Console.ReadLine(); 
-                        return; 
+                    if (count == 0)
+                    {
+                        Console.ReadLine();
+                        return;
                     }
                     Console.WriteLine($"Enter task number (1...{count}) or press 0 to cancel:");
                     if (!int.TryParse(Console.ReadLine(), out int numberEdit))
@@ -341,7 +343,7 @@ namespace Todolist
                         Console.WriteLine("Enter new Task");
                         int i = numberEdit - 1;
                         tasks[i].Name = Console.ReadLine();
-                        Console.Clear ();
+                        Console.Clear();
                         ViewTask();
                         Console.WriteLine("===============================");
                         Console.WriteLine("Task updated successfully.");
@@ -353,7 +355,7 @@ namespace Todolist
 
             static void DeleteAllTask()
             {
-                for (int i = 0; i < count; i++) 
+                for (int i = 0; i < count; i++)
                 {
                     tasks[i] = null;
                     count = 0;
@@ -382,13 +384,6 @@ namespace Todolist
                     : completerate < 60
                         ? "Making progress — stay focused!"
                         : "Good work! Keep pushing forward!";
-
-                //if (completecount == count) 
-                //    evaluation = "Excellent! Keep the energy going!";
-                //else if (completerate < 60)
-                //    evaluation = "Making progress — stay focused!";
-                //else evaluation = "Good work! Keep pushing forward!";
-
                 ViewTask();
                 Console.WriteLine("===============================");
                 Console.WriteLine("  TODAY'S PRODUCTIVITY REPORT  ");
@@ -397,11 +392,75 @@ namespace Todolist
                 Console.WriteLine($"Completed: {completecount}");
                 Console.WriteLine($"Completion Rate: {completerate:F2}%");
                 Console.WriteLine($"Evaluation: {evaluation}");
-                Console.ReadLine ();
+                Console.ReadLine();
+                return;
+            }
+            static void ExportFileTxt()
+            {
+                
+                //sap xep ngay gio bat dau
+                Array.Sort(tasks, 0, count, Comparer<TaskList>.Create((a, b) =>
+                {
+                    int byDate = a.Date.Date.CompareTo(b.Date.Date);
+                    if (byDate != 0) 
+                    { 
+                        return byDate;
+                    }
+                    else 
+                    { 
+                        int byTime = a.Time_start.CompareTo(b.Time_start);
+                        return byTime; 
+                    }
+                }));
+                ////ViewTask();
+                //ReportTask();
+                static string ExportTaskDetail()
+                {
+                    var etd = new StringBuilder();
+                    etd.AppendLine("                TIMETABLE");
+                    etd.AppendLine("========================================");
+                    etd.AppendLine($"Export at: {DateTime.Now}");
+                    etd.AppendLine("----------------------------------------");
+                    if (count == 0)
+                    {
+                        etd.AppendLine("No task available.");
+                    }
+                    else
+                    {
+                        for(int i = 0; i < count;i++)
+                        {
+                            string statusview = tasks[i].Status == StatusEnum.Done ? "[x]" : "[ ]";
+                            etd.AppendLine($"{tasks[i].Date:yyyy:MM:dd} - {tasks[i].Time_start:hh\\:mm} - {tasks[i].Time_end:hh\\:mm} {statusview} {tasks[i].Name}");
+                        }
+                        int completecount = 0;
+                        for (int i = 0; i < count; i++)
+                        {
+                            if (tasks[i].Status == StatusEnum.Done)
+                            {
+                                completecount++;
+                            }
+                        }
+                        double completerate = count == 0 ? 0.00 : (double)completecount * 100.0 / count;
+                        etd.AppendLine("========================================");
+                        etd.AppendLine($"Total Task = {count}");
+                        etd.AppendLine($"Completed: {completecount}");
+                        etd.AppendLine($"Completion Rate: {completerate:F2}%");
+                    }
+                    return etd.ToString();
+                }
+                //Console.WriteLine("test:");
+                Console.WriteLine(ExportTaskDetail());
+                string text = ExportTaskDetail();
+                string docPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                File.WriteAllText(Path.Combine(docPath, "TimeTable.txt"), text);
+                Console.WriteLine("===============================");
+                Console.WriteLine($"Exported to: {docPath}");
+                Console.WriteLine("Press Enter to return...");
+                Console.ReadLine();
                 return;
 
             }
-
+               
         }
     }
 }
