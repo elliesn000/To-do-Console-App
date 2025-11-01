@@ -75,7 +75,7 @@ namespace Todolist
         public DateTime Date;
         public TimeSpan Time_start;
         public TimeSpan Time_end;
-        public TimeSpan Duration => Time_end - Time_start;
+        public TimeSpan Duration => Time_end - Time_start; // sugar syntax
         public TaskList(string name, DateTime date, TimeSpan time_start, TimeSpan time_end)
         {
             Name = name;
@@ -89,8 +89,9 @@ namespace Todolist
 
     class Program
     {
-        static TaskList[] tasks = new TaskList[20];
+        static TaskList[] tasks = new TaskList[20]; // Defensive Coding Approach
         static int count = 0;
+
         static void Main(string[] args)
         {
             tasks[count++] = new TaskList("Test: Task 1", DateTime.Today, new TimeSpan(2, 0, 0), new TimeSpan(5, 0, 0))
@@ -379,7 +380,7 @@ namespace Todolist
                 }
                 double completerate = count == 0 ? 0.00 : (double)completecount * 100.0 / count;
 
-                string evaluation = completecount == count
+                string evaluation = completecount == count // oán tử ba ngôi (ternary operator)
                     ? "Excellent! Keep the energy going!"
                     : completerate < 60
                         ? "Making progress — stay focused!"
@@ -397,8 +398,9 @@ namespace Todolist
             }
             static void ExportFileTxt()
             {
-                
+
                 //sap xep ngay gio bat dau
+                // ref: https://toidicodedao.com/2015/02/10/series-c-hay-ho-callback-trong-c-delegate-action-predicate-func/
                 Array.Sort(tasks, 0, count, Comparer<TaskList>.Create((a, b) =>
                 {
                     int byDate = a.Date.Date.CompareTo(b.Date.Date);
