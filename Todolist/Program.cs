@@ -254,6 +254,13 @@ namespace Todolist
                     Console.ReadLine();
                     return;
                 }
+                if (choosestatus == 0) return;
+                if (choosestatus < 0 || countstatus > count)
+                {
+                    Console.WriteLine("Invalid task number!");
+                    Console.ReadLine();
+                    return;
+                }
                 switch (choosestatus)
                 {
                     case 0:
